@@ -19,7 +19,9 @@
 
         <service
             android:name=".DelayedMessageService"
-            android:exported="false"></service>
+            android:exported="false">
+        </service>
+
     </application>
 
 </manifest>
