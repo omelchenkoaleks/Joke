@@ -1,13 +1,19 @@
 package com.omelchenkoaleks.joke;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.util.Log;
+import android.support.v4.app.NotificationCompat;
 
 public class DelayedMessageService extends IntentService {
 
     // используем константу для передачи сообщения от активности к службе
     public static final String EXTRA_MESSAGE = "message";
+
+    // используется для идентификации уведомления, значение выбирается произвольно
+    public static final int NOTIFICATION_ID = 5453;
 
     // вызов конструктора суперкласса
     public DelayedMessageService() {
@@ -34,6 +40,34 @@ public class DelayedMessageService extends IntentService {
     }
 
     private void showText(final String text) {
-        Log.v("DelayedMessageService", "The message is: " + text);
+
+//        // лог испоьзовался для проверки работы сервиса, теперь он не нужен
+//        Log.v("DelayedMessageService", "The message is: " + text);
+
+        // создаем построителя уведомлений
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(android.R.drawable.sym_def_app_icon)
+                .setContentTitle(getString(R.string.question))
+                .setContentText(text)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVibrate(new long[] {0, 1000})
+                .setAutoCancel(true);
+
+        // создание действия
+        Intent actionIntent = new Intent(this, MainActivity.class);
+        PendingIntent actionPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                actionIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // отложенный интент добавляется к уведомлению
+        builder.setContentIntent(actionPendingIntent);
+
+        // выдача уведомления
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // уведомление отображается при помощи объекта NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 }
